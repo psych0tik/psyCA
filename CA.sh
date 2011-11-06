@@ -22,6 +22,7 @@
 # 11-Jun-96 eay    Fixed a few filename missmatches.
 # 03-May-96 eay    Modified to use 'ssleay cmd' instead of 'cmd'.
 # 18-Apr-96 tjh    Original hacking
+# 05-Nov-11 clf    Massive Overhaul
 #
 # Tim Hudson
 # tjh@cryptsoft.com
@@ -58,12 +59,14 @@ usage() {
  echo "usage: $0 -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify" >&2
 }
 
+if [ -f ./openssl.cnf ] ; then SSLEAY_CONFIG="-config ./openssl.cnf"; export $SSLEAY_CONFIG; echo "local openssl.cnf file found" ; fi
+
 if [ -z "$OPENSSL" ]; then OPENSSL=openssl; fi
 
 if [ -z "$DAYS" ] ; then DAYS="-days 365" ; fi	# 1 year
 CADAYS="-days 1095"	# 3 years
 REQ="$OPENSSL req $SSLEAY_CONFIG"
-CA="$OPENSSL ca $SSLEAY_CONFIG"
+CA="$OPENSSL ca -verbose $SSLEAY_CONFIG"
 VERIFY="$OPENSSL verify"
 X509="$OPENSSL x509"
 PKCS12="openssl pkcs12"
