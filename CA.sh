@@ -61,7 +61,7 @@ usage() {
 
 if [ -f ./openssl.cnf ] 
     then SSLEAY_CONFIG="-config ./openssl.cnf"
-    export $SSLEAY_CONFIG
+    export SSLEAY_CONFIG
     echo "local openssl.cnf file found" 
 fi
 
