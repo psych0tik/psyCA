@@ -59,7 +59,11 @@ usage() {
  echo "usage: $0 -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify" >&2
 }
 
-if [ -f ./openssl.cnf ] ; then SSLEAY_CONFIG="-config ./openssl.cnf"; export $SSLEAY_CONFIG; echo "local openssl.cnf file found" ; fi
+if [ -f ./openssl.cnf ] 
+    then SSLEAY_CONFIG="-config ./openssl.cnf"
+    export $SSLEAY_CONFIG
+    echo "local openssl.cnf file found" 
+fi
 
 if [ -z "$OPENSSL" ]; then OPENSSL=openssl; fi
 
