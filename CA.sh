@@ -75,7 +75,7 @@ VERIFY="$OPENSSL verify"
 X509="$OPENSSL x509"
 PKCS12="openssl pkcs12"
 
-if [ -z "$CATOP" ] ; then CATOP=./demoCA ; fi
+if [ -z "$CATOP" ] ; then CATOP=./ ; fi
 CAKEY=./cakey.pem
 CAREQ=./careq.pem
 CACERT=./cacert.pem
