@@ -137,7 +137,7 @@ case $1 in
 	    $REQ -new -keyout ${CATOP}/private/$CAKEY \
 			   -out ${CATOP}/$CAREQ
 	    RET=$?
-	    if [ "$RET" ] ; then 
+	    if [ -s ${CATOP}/private/${CAKEY} ] ; then 
 		$CA -create_serial -out ${CATOP}/$CACERT $CADAYS -batch \
 			   -keyfile ${CATOP}/private/$CAKEY -selfsign \
 			   -extensions v3_ca \
