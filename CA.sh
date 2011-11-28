@@ -124,7 +124,7 @@ case $1 in
 	read FILE
 
 	# ask user for existing CA certificate
-	if [ "$FILE" ]; then
+	if [ "$FILE" -a -f $FILE -a -r $FILE ]; then
 	    cp_pem $FILE ${CATOP}/private/$CAKEY PRIVATE
 	    cp_pem $FILE ${CATOP}/$CACERT CERTIFICATE
 	    RET=$?
