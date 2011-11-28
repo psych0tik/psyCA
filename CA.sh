@@ -124,7 +124,7 @@ case $1 in
 	read FILE
 
 	# ask user for existing CA certificate
-	if [ "$FILE" -a -f $FILE -a -r $FILE ]; then
+	if [ "$FILE" -a -f "$FILE" -a -r "$FILE" ]; then
 	    cp_pem $FILE ${CATOP}/private/$CAKEY PRIVATE
 	    cp_pem $FILE ${CATOP}/$CACERT CERTIFICATE
 	    RET=$?
@@ -136,11 +136,16 @@ case $1 in
 	    echo "Making CA certificate ..."
 	    $REQ -new -keyout ${CATOP}/private/$CAKEY \
 			   -out ${CATOP}/$CAREQ
-	    $CA -create_serial -out ${CATOP}/$CACERT $CADAYS -batch \
+	    RET=$?
+	    if [ "$RET" ] ; then 
+		$CA -create_serial -out ${CATOP}/$CACERT $CADAYS -batch \
 			   -keyfile ${CATOP}/private/$CAKEY -selfsign \
 			   -extensions v3_ca \
 			   -infiles ${CATOP}/$CAREQ
-	    RET=$?
+		RET=$?
+	    else
+		echo "CA key generation failed." 1>&2 
+	    fi	
 	fi
     fi
     ;;
