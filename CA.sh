@@ -204,8 +204,10 @@ case $1 in
     cd ${CATOP}
     ls -A | egrep -v '(CA\.sh|openssl\.cnf|\.git)' | xargs rm -rf 
     popd
+    ;;
 *)
-    echo "Unknown arg $i" >&2
+    echo "Command: $0 $*" 
+    echo "Unknown arg $1" >&2
     usage
     exit 1
     ;;
