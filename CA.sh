@@ -199,6 +199,11 @@ case $1 in
     fi
     exit $RET
     ;;
+-exterminate)
+    pushd
+    cd ${CATOP}
+    ls -A | egrep -v '(CA\.sh|openssl\.cnf|\.git)' | xargs rm -rf 
+    popd
 *)
     echo "Unknown arg $i" >&2
     usage
