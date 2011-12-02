@@ -200,8 +200,7 @@ case $1 in
     exit $RET
     ;;
 -exterminate)
-    pushd
-    cd ${CATOP}
+    pushd ${CATOP}
     ls -A | egrep -v '(CA\.sh|openssl\.cnf|\.git)' | xargs rm -rf 
     popd
     ;;
