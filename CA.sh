@@ -107,10 +107,23 @@ case $1 in
     exit 0
     ;;
 -newcert)
+    until (is_mode $2) 
+    do
+	shift
+	case $1 in 
+	    -bits=*) bits="-newkey rsa:${1#-*=}"
+		;;
+	    -days=*) days="-days ${1#-*=}"
+		;;
+	    -extensions=*) reqext="-reqexts ${1#-*=}"
+		;;
+	esac
+    done
     # create a certificate
-    $REQ -new -x509 -keyout newkey.pem -out newcert.pem $DAYS
+    $REQ -new -x509 -keyout newkey.pem -out newcert.pem $DAYS $days $bits $reqext
     RET=$?
     echo "Certificate is in newcert.pem, private key is in newkey.pem"
+    unset bits days reqext
     ;;
 -newreq)
     # create a certificate request
@@ -125,9 +138,7 @@ case $1 in
     echo "Request (and private key) is in newreq.pem"
     ;;
 -newca)
-    # if explicitly asked for or it doesn't exist then setup the directory
-    # structure that Eric likes to manage things
-    until (is_mode $2)
+    until (is_mode $2) 
     do
 	shift
 	case $1 in 
@@ -139,6 +150,9 @@ case $1 in
 		;;
 	esac
     done
+
+    # if explicitly asked for or it doesn't exist then setup the directory
+    # structure that Eric likes to manage things
 	
     NEW="1"
     if [ "$NEW" -o ! -f ${CATOP}/serial ]; then
@@ -179,6 +193,7 @@ case $1 in
 	    fi	
 	fi
     fi
+    unset bits days exten
     ;;
 -xsign)
     $CA -policy policy_anything -infiles newreq.pem
