@@ -55,6 +55,24 @@ cp_pem() {
     done
 }
 
+is_mode() {
+    echo $1 >&2
+     case "$1" in
+	 -newcert|-newreq|-newreq-nodes|-newca|-xsign|-pkcs11|-sign|-signreq|-signCA|-signcert|-verify|-exterminate)
+	    echo "it's a mode!" >&2
+	    return 0
+	;;
+	"") echo "it's empty!" >&2
+	    return 0
+	;;
+	*)
+	    echo "it's not a mode!" >&2
+	    return 1
+	;;
+    esac
+}
+
+
 usage() {
  echo "usage: $0 -newcert|-newreq|-newreq-nodes|-newca|-sign|-verify" >&2
 }
@@ -109,6 +127,19 @@ case $1 in
 -newca)
     # if explicitly asked for or it doesn't exist then setup the directory
     # structure that Eric likes to manage things
+    until (is_mode $2)
+    do
+	shift
+	case $1 in 
+	    -bits=*) bits="-newkey rsa:${1#-*=}"
+		;;
+	    -days=*) days="-days ${1#-*=}"
+		;;
+	    -extensions=*) exten="${1#-*=}"
+		;;
+	esac
+    done
+	
     NEW="1"
     if [ "$NEW" -o ! -f ${CATOP}/serial ]; then
 	# create the directory hierarchy
@@ -135,12 +166,12 @@ case $1 in
 	else
 	    echo "Making CA certificate ..."
 	    $REQ -new -keyout ${CATOP}/private/$CAKEY \
-			   -out ${CATOP}/$CAREQ
+			   -out ${CATOP}/$CAREQ $bits
 	    RET=$?
 	    if [ -s ${CATOP}/private/${CAKEY} ] ; then 
 		$CA -create_serial -out ${CATOP}/$CACERT $CADAYS -batch \
 			   -keyfile ${CATOP}/private/$CAKEY -selfsign \
-			   -extensions v3_ca \
+			   -extensions ${exten:-v3_ca} \
 			   -infiles ${CATOP}/$CAREQ
 		RET=$?
 	    else
