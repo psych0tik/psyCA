@@ -126,16 +126,43 @@ case $1 in
     unset bits days reqext
     ;;
 -newreq)
+    until (is_mode $2) 
+    do
+	shift
+	case $1 in 
+	    -bits=*) bits="-newkey rsa:${1#-*=}"
+		;;
+	    -days=*) days="-days ${1#-*=}"
+		;;
+	    -extensions=*) reqext="-reqexts ${1#-*=}"
+		;;
+	esac
+    done
     # create a certificate request
-    $REQ -new -keyout newkey.pem -out newreq.pem $DAYS
+    $REQ -new -keyout newkey.pem -out newreq.pem $DAYS $days $bits $reqext
     RET=$?
     echo "Request is in newreq.pem, private key is in newkey.pem"
+    unset bits days reqext
+    ;;
     ;;
 -newreq-nodes) 
+    until (is_mode $2) 
+    do
+	shift
+	case $1 in 
+	    -bits=*) bits="-newkey rsa:${1#-*=}"
+		;;
+	    -days=*) days="-days ${1#-*=}"
+		;;
+	    -extensions=*) reqext="-reqexts ${1#-*=}"
+		;;
+	esac
+    done
     # create a certificate request
-    $REQ -new -nodes -keyout newreq.pem -out newreq.pem $DAYS
+    $REQ -new -nodes -keyout newreq.pem -out newreq.pem $DAYS $days $bits $reqext
     RET=$?
     echo "Request (and private key) is in newreq.pem"
+    unset bits days reqext
     ;;
 -newca)
     until (is_mode $2) 
