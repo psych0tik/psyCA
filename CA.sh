@@ -117,13 +117,15 @@ case $1 in
 		;;
 	    -extensions=*) reqext="-reqexts ${1#-*=}"
 		;;
+	    -name=*) fileprefix="${1#-*=}"
+		;;
 	esac
     done
     # create a certificate
-    $REQ -new -x509 -keyout newkey.pem -out newcert.pem $DAYS $days $bits $reqext
+    $REQ -new -x509 -keyout ${fileprefix:-new}key.pem -out ${fileprefix:-new}cert.pem $DAYS $days $bits $reqext
     RET=$?
-    echo "Certificate is in newcert.pem, private key is in newkey.pem"
-    unset bits days reqext
+    echo "Request is in ${fileprefix:-new}cert.pem, private key is in ${fileprefix:-new}key.pem"
+    unset bits days reqext fileprefix
     ;;
 -newreq|-newreq-nodes)
     if [ "$1" = "-newreq-nodes" ]
@@ -141,13 +143,15 @@ case $1 in
 		;;
 	    -extensions=*) reqext="-reqexts ${1#-*=}"
 		;;
+	    -name=*) fileprefix="${1#-*=}"
+		;;
 	esac
     done
     # create a certificate request
-    $REQ -new $nodesset -keyout newkey.pem -out newreq.pem $DAYS $days $bits $reqext
+    $REQ -new $nodesset -keyout ${fileprefix:-new}key.pem -out ${fileprefix:-new}req.pem $DAYS $days $bits $reqext
     RET=$?
-    echo "Request is in newreq.pem, private key is in newkey.pem"
-    unset bits days reqext nodesset
+    echo "Request is in ${fileprefix:-new}req.pem, private key is in ${fileprefix:-new}key.pem"
+    unset bits days reqext nodesset fileprefix
     ;;
 -newca)
     until (is_mode $2) 
