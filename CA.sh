@@ -59,15 +59,12 @@ is_mode() {
     echo $1 >&2
      case "$1" in
 	 -newcert|-newreq|-newreq-nodes|-newca|-xsign|-pkcs11|-sign|-signreq|-signCA|-signcert|-verify|-exterminate)
-	    echo "it's a mode!" >&2
 	    return 0
 	;;
-	"") echo "it's empty!" >&2
-	    return 0
+	"") return 0
 	;;
-	*)
+	*) return 1
 	    echo "it's not a mode!" >&2
-	    return 1
 	;;
     esac
 }
