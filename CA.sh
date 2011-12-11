@@ -212,8 +212,19 @@ case $1 in
     unset bits days exten
     ;;
 -xsign)
-    $CA -policy policy_anything -infiles newreq.pem
+    until (is_mode $2)
+    do
+	shift
+	case $1 in 
+	    -policy=*) polset="${1#-*=}"
+		;;
+	    -file=*) reqfiles="$reqfiles ${1#-*=}"
+		;;
+	esac
+    done
+    $CA -policy ${polset:-policy_anything} -infiles ${reqfiles:-newreq.pem}
     RET=$?
+    unset polset reqfiles
     ;;
 -pkcs12)
     if [ -z "$2" ] ; then
