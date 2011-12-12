@@ -64,7 +64,6 @@ is_mode() {
 	"") return 0
 	;;
 	*) return 1
-	    echo "it's not a mode!" >&2
 	;;
     esac
 }
@@ -224,14 +223,34 @@ case $1 in
     unset polset reqfiles
     ;;
 -pkcs12)
-    if [ -z "$2" ] ; then
-	CNAME="My Certificate"
-    else
-	CNAME="$2"
-    fi
-    $PKCS12 -in newcert.pem -inkey newreq.pem -certfile ${CATOP}/$CACERT \
-	    -out newcert.p12 -export -name "$CNAME"
+    infile="newcert.pem"
+    inkey="newkey.pem"
+    CNAME="My Certificate"
+    until (is_mode $2) 
+    do
+	case $1 in 
+	    -name=*) fileprefix="${1#-*=}"
+		if [ "$infile" != "newcert.pem" ] ; then
+		    infile="${fileprefix}cert.pem"
+		fi
+		if [ "$inkey" != "newkey.pem" ] ; then
+		    inkey="${fileprefix}key.pem"
+		fi
+		;;
+	    -infile=*) infile="${1#-*=}"
+		;;
+	    -inkey=*) inkey="${1#-*=}"
+		;;
+	    *)	CNAME="$1"
+		;;
+	esac
+    done
+
+    $PKCS12 -in "$infile" -inkey "$inkey" -certfile ${CATOP}/$CACERT \
+	    -out ${fileprefix:-new}cert.p12 -export -name "$CNAME"
     RET=$?
+    unset infile inkey CNAME fileprefix
+    echo "PKCS#12 certificate written to ${fileprefix:-new}cert.p12"
     exit $RET
     ;;
 -sign|-signreq)
