@@ -266,10 +266,11 @@ case $1 in
 		;;
 	    -out=*)	outfile="${1#-*=}"
 		;;
+	    -ext=*) v3ext="-extensions ${1#-*=}"
 	esac
     done
     
-    $CA -policy ${polset:-policy_anything} -out ${outfile:=${name:-new}cert.pem} -infiles ${infile:-${name:-new}req.pem}
+    $CA -policy ${polset:-policy_anything} $v3ext -out ${outfile:=${name:-new}cert.pem} -infiles ${infile:-${name:-new}req.pem}
     RET=$?
     cat $outfile
     echo "Signed certificate is in $outfile"
