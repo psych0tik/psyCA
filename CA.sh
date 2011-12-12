@@ -254,10 +254,26 @@ case $1 in
     exit $RET
     ;;
 -sign|-signreq)
-    $CA -policy policy_anything -out newcert.pem -infiles newreq.pem
+    until (is_mode $2)
+    do
+	shift
+	case $1 in
+	    -policy=*)	polset="${1#-*=}"
+		;;
+	    -file=*)	infile="${1#-*=}"
+		;;
+	    -name=*)	fileprefix="${1#-*=}"
+		;;
+	    -out=*)	outfile="${1#-*=}"
+		;;
+	esac
+    done
+    
+    $CA -policy ${polset:-policy_anything} -out ${outfile:=${name:-new}cert.pem} -infiles ${infile:-${name:-new}req.pem}
     RET=$?
-    cat newcert.pem
-    echo "Signed certificate is in newcert.pem"
+    cat $outfile
+    echo "Signed certificate is in $outfile"
+    unset polset infile fileprefix outfile
     ;;
 -signCA)
     $CA -policy policy_anything -out newcert.pem -extensions v3_ca -infiles newreq.pem
