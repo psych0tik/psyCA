@@ -274,12 +274,28 @@ case $1 in
     RET=$?
     cat $outfile
     echo "Signed certificate is in $outfile"
-    unset polset infile fileprefix outfile
+    unset polset infile fileprefix outfile ext
     ;;
 -signCA)
-    $CA -policy policy_anything -out newcert.pem -extensions v3_ca -infiles newreq.pem
+    until (is_mode $2) 
+    do
+	shift
+	case $1 in
+	    -policy=*) polset="${1#-*=}"
+		;;
+	    -out=*) outfile="${1#-*=}"
+		;;
+	    -file=*) infile="${1#-*=}"
+		;;
+	    -name=*) fileprefix="${1#-*=}"
+		;;
+	esac
+    done
+
+    $CA -policy ${polset:-policy_anything} -out ${outfile:=${fileprefix:-new}cert.pem} -extensions v3_ca -infiles ${infile:-${fileprefix:-new}req.pem}
     RET=$?
-    echo "Signed CA certificate is in newcert.pem"
+    echo "Signed CA certificate is in $outfile"
+    unset polset outfile infile fileprefix
     ;;
 -signcert)
     echo "Cert passphrase will be requested twice - bug?"
