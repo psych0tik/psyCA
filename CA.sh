@@ -341,9 +341,11 @@ case $1 in
     exit $RET
     ;;
 -exterminate)
-    pushd ${CATOP}
+    currdir=$(pwd)
+    cd ${CATOP}
     ls -A | egrep -v '(CA\.sh|openssl\.cnf|\.git)' | xargs rm -rf 
-    popd
+    cd $currdir
+    unset currdir
     ;;
 *)
     echo "Command: $0 $*" 
