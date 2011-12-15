@@ -298,12 +298,31 @@ case $1 in
     unset polset outfile infile fileprefix
     ;;
 -signcert)
+    until (is_mode $2)
+    do
+	shift
+	case $1 in 
+	    -name=*) fileprefix="${1#-*=}"
+		;;
+	    -out=*) outfile="${1#-*=}"
+		;;
+	    -file=*) infile="${1#-*=}"
+		;;
+	    -key=*) keyfile="${1#-*=}"
+		;;
+	    -policy=*) polset="${1#-*=}"
+		;;
+	    -ext=*) extensions="-extensions ${1#-*=}"
+		;;
+	esac
+    done
     echo "Cert passphrase will be requested twice - bug?"
-    $X509 -x509toreq -in newreq.pem -signkey newreq.pem -out tmp.pem
-    $CA -policy policy_anything -out newcert.pem -infiles tmp.pem
+    $X509 -x509toreq -in ${infile:-${fileprefix:-new}req.pem} -signkey ${keyfile:-${fileprefix:-new}key.pem} -out tmp.pem
+    $CA -policy ${polset:-policy_anything} $extensions -out ${outfile:=${fileprefix:-new}cert.pem} -infiles tmp.pem
     RET=$?
-    cat newcert.pem
-    echo "Signed certificate is in newcert.pem"
+    cat $outfile
+    echo "Signed certificate is in $outfile"
+    unset extensions fileprefix outfile infile polset keyfile
     ;;
 -verify)
     shift
